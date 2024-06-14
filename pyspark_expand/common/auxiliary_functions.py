@@ -82,12 +82,10 @@ def get_n_missing_values(df: "DataFrame") -> None:
     -------
         Summary
     """
+    _predicat = lambda col: F.isnull(col) | F.isnan(col)
 
     df.select(
-        [
-            F.count(F.when(F.isnull(col_) | F.isnan(col_), 1)).alias(col_)
-            for col_ in df.columns
-        ]
+        [F.count(F.when(_predicat(col_), 1)).alias(col_) for col_ in df.columns]
     ).show()
 
 
@@ -105,6 +103,6 @@ def get_n_unique_values(df: "DataFrame") -> None:
         Summary
     """
 
-    df.select(
-        [F.approx_count_distinct(col_).alias(col_) for col_ in df.columns]
-    ).show()
+    _approx_count_distinct = lambda col: F.approx_count_distinct(col).alias(col)
+
+    df.select([_approx_count_distinct(col_) for col_ in df.columns]).show()
