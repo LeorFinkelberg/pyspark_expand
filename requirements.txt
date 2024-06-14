@@ -1,0 +1,5 @@
+# Frameworks
+pyspark ~= 3.5.1
+
+# Tests
+pytest >= 6.2.0

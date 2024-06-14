@@ -52,7 +52,7 @@ def drop_cols_with_set_cardinality(
 
     if cardinality <= 0:
         raise InvalidCardinalityError(
-            "Cardinality must be positive. " f"Passed value: {cardinality}"
+            f"Cardinality must be positive. Passed value: {cardinality}"
         )
 
     return df.drop(
@@ -67,3 +67,44 @@ def drop_cols_with_set_cardinality(
             if value == cardinality
         ]
     )
+
+
+def get_n_missing_values(df: "DataFrame") -> None:
+    """
+    Gets n missing values
+
+    Parameters
+    ----------
+    df: :class:`DataFrame`
+        Source DataFrame.
+
+    Returns
+    -------
+        Summary
+    """
+
+    df.select(
+        [
+            F.count(F.when(F.isnull(col_) | F.isnan(col_), 1)).alias(col_)
+            for col_ in df.columns
+        ]
+    ).show()
+
+
+def get_n_unique_values(df: "DataFrame") -> None:
+    """
+    Gets n unique values for columns
+
+    Parameters
+    ----------
+    df: :class:`DataFrame`
+        Source DataFrame.
+
+    Returns
+    -------
+        Summary
+    """
+
+    df.select(
+        [F.approx_count_distinct(col_).alias(col_) for col_ in df.columns]
+    ).show()
