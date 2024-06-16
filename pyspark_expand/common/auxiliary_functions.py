@@ -1,6 +1,7 @@
 import typing as t
 
 from pyspark.sql import functions as F
+from pyspark.sql.column import Column
 
 from pyspark_expand.common.exceptions import *
 
@@ -59,7 +60,10 @@ def drop_cols_with_set_cardinality(
         *[
             key
             for key, value in df.select(
-                [F.approx_count_distinct(col_).alias(col_) for col_ in df.columns]
+                [
+                    F.approx_count_distinct(col_).alias(col_)
+                    for col_ in df.columns
+                ]
             )
             .first()
             .asDict()
@@ -85,7 +89,10 @@ def get_n_missing_values(df: "DataFrame") -> None:
     _predicat = lambda col: F.isnull(col) | F.isnan(col)
 
     df.select(
-        [F.count(F.when(_predicat(col_), 1)).alias(col_) for col_ in df.columns]
+        [
+            F.count(F.when(_predicat(col_), 1)).alias(col_)
+            for col_ in df.columns
+        ]
     ).show()
 
 
@@ -103,6 +110,18 @@ def get_n_unique_values(df: "DataFrame") -> None:
         Summary
     """
 
-    _approx_count_distinct = lambda col: F.approx_count_distinct(col).alias(col)
+    def _approx_count_distinct(col) -> Column:
+        return F.approx_count_distinct(col).alias(col)
 
     df.select([_approx_count_distinct(col_) for col_ in df.columns]).show()
+
+
+def train_test_split(
+    df: "DataFrame",
+    train_size: float,
+    test_size: float,
+    stratify,
+    shuffle: bool = False,
+):
+    # TODO
+    pass
