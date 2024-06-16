@@ -112,7 +112,7 @@ def get_n_unique_values(df: "DataFrame") -> None:
         Summary
     """
 
-    def _approx_count_distinct(col) -> Column:
+    def _approx_count_distinct(col: str) -> Column:
         return F.approx_count_distinct(col).alias(col)
 
     df.select([_approx_count_distinct(col_) for col_ in df.columns]).show()
