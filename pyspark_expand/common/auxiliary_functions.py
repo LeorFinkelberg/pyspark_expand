@@ -86,11 +86,13 @@ def get_n_missing_values(df: "DataFrame") -> None:
     -------
         Summary
     """
-    _predicat = lambda col: F.isnull(col) | F.isnan(col)
+
+    def _predicate(col: t.Union[str, Column]) -> Column:
+        return F.isnull(col) | F.isnan(col)
 
     df.select(
         [
-            F.count(F.when(_predicat(col_), 1)).alias(col_)
+            F.count(F.when(_predicate(col_), 1)).alias(col_)
             for col_ in df.columns
         ]
     ).show()
